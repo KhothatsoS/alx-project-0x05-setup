@@ -13,9 +13,35 @@ const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
 
-   const handleGenerateImage = async () => {
-    console.log("Generating Image")
-    console.log(process.env.NEXT_PUBLIC_GPT_API_KEY)
+   import ImageCard from "@/components/common/ImageCard";
+import React, { useState } from "react";
+
+const Home: React.FC = () => {
+  const [prompt, setPrompt] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+
+  const handleGenerateImage = async () => {
+    setIsLoading(true);
+    const resp = await fetch('/api/generate-image', {
+      method: 'POST',
+      body: JSON.stringify({
+        prompt
+      }),
+      headers: {
+        'Content-type': 'application/json'
+      }
+    })
+
+
+    if (!resp.ok) {
+      setIsLoading(false)
+      return;
+    }
+
+    const data = await resp.json()
+    setIsLoading(false)
   };
 
   return (
@@ -38,10 +64,9 @@ const Home: React.FC = () => {
             onClick={handleGenerateImage}
             className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
           >
-            {/* {
+            {
               isLoading ? "Loading..." : "Generate Image"
-            } */}
-            Generate Image
+            }
           </button>
         </div>
 
@@ -50,5 +75,6 @@ const Home: React.FC = () => {
     </div>
   );
 };
+
 
 export default Home;
